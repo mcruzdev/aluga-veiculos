@@ -1,11 +1,18 @@
 package tech.ada.model;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Vehicle {
+@Entity
+public class Vehicle extends PanacheEntityBase {
 
     private static final Map<VehicleStatus, Set<VehicleStatus>> VEHICLE_STATUS = new HashMap<>() {
     };
@@ -16,21 +23,22 @@ public class Vehicle {
         VEHICLE_STATUS.put(VehicleStatus.UNDER_MAINTENANCE, Set.of(VehicleStatus.AVAILABLE));
     }
 
-    private static final AtomicLong ATOMIC_LONG = new AtomicLong(1);
+    @Id
+    @GeneratedValue
     private Long id;
     private String model;
     private VehicleStatus status;
+    @Column(name = "vehicle_year")
     private int year;
     private String engine;
 
-    public Vehicle(String model, int year, String engine) {
-        this.id = ATOMIC_LONG.getAndIncrement();
-        this.status = VehicleStatus.AVAILABLE;
+    protected Vehicle() {}
 
+    public Vehicle(String model, int year, String engine) {
+        this.status = VehicleStatus.AVAILABLE;
         if (model == null || model.isBlank()) {
             throw new IllegalArgumentException("model must not be null");
         }
-
         this.model = model;
         this.year = year;
         this.engine = engine;

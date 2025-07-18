@@ -6,9 +6,12 @@ import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import jakarta.transaction.Transactional;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tech.ada.dto.VehicleRequestBody;
+import tech.ada.model.Vehicle;
 import tech.ada.model.VehicleStatus;
 
 @QuarkusTest
@@ -34,14 +37,19 @@ public class VehicleResourceIntegrationTest {
         return response.getHeader("Location");
     }
 
+    @Transactional
+    public void createVehicleInDatabase() {
+        Vehicle vehicle = new Vehicle("Mobi", 2025, "1.0");
+        vehicle.persist();
+    }
+
     @BeforeEach
     void beforeEach() {
         Log.info("Executando antes de todos os testes");
     }
 
     @Test
-    void shouldReturn400WhenThereAreSomeInvalidFields() throws JsonProcessingException {
-
+    void shouldReturn201WhenSendAValidVehicle() {
 
         RestAssured.given()
                 .contentType("application/json")
@@ -78,6 +86,7 @@ public class VehicleResourceIntegrationTest {
 
     @Test
     void shouldGetAll() {
+        createVehicleInDatabase();
         RestAssured.given()
                 .get("api/v1/vehicles")
                 .then()

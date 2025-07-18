@@ -12,7 +12,6 @@ public class VehicleRequestBody {
     private int year;
     private String engine;
 
-
     public String getModel() {
         return model;
     }
