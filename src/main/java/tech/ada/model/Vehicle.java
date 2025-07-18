@@ -26,6 +26,11 @@ public class Vehicle {
     public Vehicle(String model, int year, String engine) {
         this.id = ATOMIC_LONG.getAndIncrement();
         this.status = VehicleStatus.AVAILABLE;
+
+        if (model == null || model.isBlank()) {
+            throw new IllegalArgumentException("model must not be null");
+        }
+
         this.model = model;
         this.year = year;
         this.engine = engine;
@@ -55,8 +60,6 @@ public class Vehicle {
         return this.getStatus().equals(VehicleStatus.RENTED);
     }
 
-
-
     public void setStatus(VehicleStatus incomingStatus) {
         Set<VehicleStatus> possibleStatus = VEHICLE_STATUS.get(this.status);
 
@@ -67,7 +70,7 @@ public class Vehicle {
         if (possibleStatus.contains(incomingStatus)) {
             this.status = incomingStatus;
         } else {
-            throw new RuntimeException("Validation error, possible status are: " + possibleStatus);
+            throw new IllegalArgumentException("Validation error, possible status are: " + possibleStatus);
         }
 
 //        if (this.status.equals(VehicleStatus.AVAILABLE) && incomingStatus == VehicleStatus.RENTED) {

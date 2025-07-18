@@ -25,15 +25,20 @@ public class VehicleResource {
             VehicleRequestBody body
     ) {
 
-        Vehicle vehicle = new Vehicle(
-                body.getModel(),
-                body.getYear(),
-                body.getEngine()
-        );
+        try {
+            Vehicle vehicle = new Vehicle(
+                    body.getModel(),
+                    body.getYear(),
+                    body.getEngine()
+            );
+            VEHICLES.put(vehicle.getId(), vehicle);
 
-        VEHICLES.put(vehicle.getId(), vehicle);
+            return Response.created(URI.create("/api/v1/vehicles/" + vehicle.getId())).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
 
-        return Response.created(URI.create("/api/v1/vehicles/" + vehicle.getId())).build();
+
     }
 
     @GET
